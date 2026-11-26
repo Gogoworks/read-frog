@@ -2088,6 +2088,9 @@ personal:
   addField: Add field
   removeField: Remove field
   details: Note details
+  backToNotebook: Back to notebook
+  editNote: Edit note
+  emptyFields: This note has no field values.
   original: Original AI output
   selection: Original selection
   source: Source

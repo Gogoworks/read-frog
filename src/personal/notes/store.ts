@@ -49,6 +49,15 @@ export class PersonalNotesDB extends Dexie {
     return this.notes.where("libraryId").equals(libraryId).toArray()
   }
 
+  getNoteWithLibrary(id: string) {
+    return this.transaction("r", this.notes, this.libraries, async () => {
+      const note = await this.notes.get(id)
+      if (!note) return null
+      const library = await this.libraries.get(note.libraryId)
+      return library ? { note, library } : null
+    })
+  }
+
   connectionOptions(actionId: string) {
     return this.transaction("r", this.libraries, this.bindings, async () => ({
       libraries: await this.listLibraries(),

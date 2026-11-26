@@ -1951,6 +1951,9 @@ personal:
   addField: 添加字段
   removeField: 移除字段
   details: 笔记详情
+  backToNotebook: 返回笔记库
+  editNote: 编辑笔记
+  emptyFields: 这条笔记的内容为空。
   original: 原始 AI 输出
   selection: 原始选中文字
   source: 来源

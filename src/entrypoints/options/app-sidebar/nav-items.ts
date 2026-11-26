@@ -18,6 +18,7 @@ export const ROUTE_DEFS = [
   { path: "/api-providers" },
   { path: "/custom-actions" },
   { path: "/local-notes" },
+  { path: "/local-notes/:noteId" },
   { path: "/page-translation" },
   { path: "/video-subtitles", feature: "videoSubtitles" },
   { path: "/floating-button", feature: "floatingButton" },

@@ -9,6 +9,7 @@ import process from "node:process"
 import { fileURLToPath } from "node:url"
 import { chromium } from "playwright-core"
 import { exerciseManagement } from "./exercise-management.mjs"
+import { exerciseReader } from "./exercise-reader.mjs"
 
 const extension = fileURLToPath(new URL("../../.output/chrome-mv3/", import.meta.url))
 const manifest = JSON.parse(await readFile(path.join(extension, "manifest.json"), "utf8"))
@@ -156,7 +157,9 @@ async function launch(paths = extension) {
 }
 async function jsonBackup() {
   const download = options.waitForEvent("download")
-  await options.getByRole("button", { name: "Back up all notebooks (JSON)", exact: true }).click()
+  await options
+    .getByRole("button", { name: /^(?:Back up all notebooks \(JSON\)|备份全部笔记库（JSON）)$/ })
+    .click()
   return JSON.parse(await readFile(await (await download).path(), "utf8"))
 }
 
@@ -381,6 +384,12 @@ try {
   await options.getByRole("heading", { name: "本地笔记", exact: true }).waitFor()
   await options.getByRole("button", { name: "新建笔记库" }).waitFor()
   console.log("Simplified Chinese notes UI verified")
+  await exerciseReader({
+    options,
+    context,
+    jsonBackup,
+    screenshots: process.env.PERSONAL_SMOKE_SCREENSHOTS,
+  })
   assert.deepEqual(errors, [])
   if (process.env.READ_FROG_OFFICIAL_PACKAGE) {
     await context.close()

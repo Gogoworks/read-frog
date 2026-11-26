@@ -10,6 +10,7 @@ import { getRouteFeature, ROUTE_DEFS } from "./app-sidebar/nav-items"
 import { buildSimpleModeRowLink } from "./pages/advanced/simple-mode/links"
 
 const LocalNotesPage = lazy(() => import("@/personal/ui/notes-page"))
+const NoteReaderPage = lazy(() => import("@/personal/ui/note-reader-page"))
 const UsagePage = lazy(() =>
   import("./pages/usage").then((module) => ({ default: module.UsagePage })),
 )
@@ -147,6 +148,7 @@ const ROUTE_COMPONENTS: Record<RoutePath, ComponentType> = {
   "/api-providers": ApiProvidersPage,
   "/custom-actions": CustomActionsPage,
   "/local-notes": LocalNotesPage,
+  "/local-notes/:noteId": NoteReaderPage,
   "/page-translation": TranslationPage,
   "/video-subtitles": VideoSubtitlesPage,
   "/floating-button": FloatingButtonPage,

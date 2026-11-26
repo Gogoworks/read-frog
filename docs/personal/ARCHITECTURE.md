@@ -26,6 +26,12 @@
 
 **版本演进。** 已交付的 Dexie v1 表声明及 JSON `format/version` 是兼容契约。以后追加 Dexie 版本并测试原地升级，必要时用 `.upgrade()` 转换旧行。JSON 读取器按版本做转换或在写入前拒绝未知版本。当前是第一次引入该数据库，没有历史个人版数据库需要迁移。
 
+## 笔记阅读
+
+列表中的每条笔记链接到 `#/local-notes/:noteId`。设置页按主键在一次只读事务中取得笔记和所属库，使用保存时的字段值生成阅读视图。此路径支持刷新、单独开标签页、离线和已移除的指令模板。通过列表进入时，沿用设置页的历史返回和滚动恢复。搜索、排序与分页保存在当前设置页的内存中。
+
+`src/personal/notes/reading.ts` 识别完整的 JSON 对象、数组及带代码围栏的 JSON。`src/personal/ui/readable-value.tsx` 将词语与释义、回复方式与正文、标题与角度排成条目，其余键值按名称递归展示。普通文本、残缺 JSON、超过 100,000 字符或嵌套超过 12 层的内容按原文显示。文本由 React 转义。进入「编辑笔记」后才显示可编辑的存储值，保存时沿用修改时间冲突检查。数据库和备份继续使用 v1。
+
 ## 导入导出与同步
 
 - `backup.ts` 使用 Zod 严格校验 JSON 顶层、字段、时间、值类型和引用。读快照和写入恢复各在一个事务中。库、绑定、笔记的同 ID 同内容会跳过。有一条同 ID 内容不同，就回滚本次导入。
@@ -35,14 +41,14 @@
 
 ## 新增文件
 
-| 位置                                                               | 职责                                                  |
-| ------------------------------------------------------------------ | ----------------------------------------------------- |
-| `src/personal/notes/{model,save,store,browse,backup,cloud-csv}.ts` | 数据模型、保存投影、事务、查询、JSON 和 CSV           |
-| `src/personal/ui/`                                                 | 设置页、映射表单、详情与确认弹窗、备份工具及保存反馈  |
-| `src/personal/config-export.ts`                                    | 过滤当前和历史服务商配置中的凭据                      |
-| `src/components/custom-action/save-button-view.tsx`                | 两个适配器共用的原样书签按钮                          |
-| `src/personal/__tests__/`、`scripts/personal/`                     | 模拟 IndexedDB 单测、真实 Chrome 临时资料的端到端验收 |
-| `docs/personal/`                                                   | 使用、维护与验收文档                                  |
+| 位置                                                                       | 职责                                                       |
+| -------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| `src/personal/notes/{model,save,store,browse,reading,backup,cloud-csv}.ts` | 数据模型、保存投影、事务、查询、阅读排版、JSON 和 CSV      |
+| `src/personal/ui/`                                                         | 设置页、映射表单、笔记阅读与编辑、确认弹窗、备份和保存反馈 |
+| `src/personal/config-export.ts`                                            | 过滤当前和历史服务商配置中的凭据                           |
+| `src/components/custom-action/save-button-view.tsx`                        | 两个适配器共用的原样书签按钮                               |
+| `src/personal/__tests__/`、`scripts/personal/`                             | 模拟 IndexedDB 单测、真实 Chrome 临时资料的端到端验收      |
+| `docs/personal/`                                                           | 使用、维护与验收文档                                       |
 
 ## 修改过的上游文件
 
@@ -65,9 +71,9 @@
 | `src/entrypoints/content-runtime/selection/selection-toolbar/note-suggestion/__tests__/note-suggestion-card.test.tsx` | 从本地保存入口验证勾选、重试和选区传递。                            |
 | `src/entrypoints/content-runtime/selection/selection-toolbar/translate-button/provider.tsx`                           | 把翻译卡已经持有的原选区传给笔记建议。                              |
 | `src/entrypoints/subtitles.content/learning/word-lookup-card.tsx`                                                     | 同一结果卡提供本地保存，取消云端保存对话框的挂载。                  |
-| `src/entrypoints/options/app.tsx`                                                                                     | 注册本地笔记设置路由。                                              |
-| `src/entrypoints/options/app-sidebar/nav-items.ts`                                                                    | 把本地笔记加入已知页面。                                            |
-| `src/entrypoints/options/app-sidebar/settings-nav.tsx`                                                                | 在原有设置导航之后加入本地笔记入口。                                |
+| `src/entrypoints/options/app.tsx`                                                                                     | 注册笔记列表和单条笔记阅读页，按需加载页面。                        |
+| `src/entrypoints/options/app-sidebar/nav-items.ts`                                                                    | 注册本地笔记列表路径和含笔记 ID 的详情路径。                        |
+| `src/entrypoints/options/app-sidebar/settings-nav.tsx`                                                                | 在设置导航加入本地笔记入口，阅读详情时保持选中状态。                |
 | `src/entrypoints/options/app-sidebar/__tests__/settings-nav.test.tsx`                                                 | 锁定已有导航顺序和新增入口。                                        |
 | `src/entrypoints/options/command-palette/search-items.ts`                                                             | 搜索字段映射时展示本地连接说明。                                    |
 | `src/entrypoints/options/index.html`                                                                                  | 让设置页标签显示个人版名称。                                        |

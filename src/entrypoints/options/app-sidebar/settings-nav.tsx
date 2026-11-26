@@ -66,7 +66,7 @@ export function SettingsNav() {
           <SidebarMenuItem>
             <SidebarMenuButton
               render={<Link to="/local-notes" />}
-              isActive={pathname === "/local-notes"}
+              isActive={pathname === "/local-notes" || pathname.startsWith("/local-notes/")}
               tooltip={i18n.t("personal.title")}
             >
               <IconBook2 />
