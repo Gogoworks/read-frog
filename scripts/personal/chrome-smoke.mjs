@@ -8,6 +8,7 @@ import path from "node:path"
 import process from "node:process"
 import { fileURLToPath } from "node:url"
 import { chromium } from "playwright-core"
+import { checkScriptPolicy } from "./check-script-policy.mjs"
 import { exerciseManagement } from "./exercise-management.mjs"
 import { exerciseReader } from "./exercise-reader.mjs"
 
@@ -290,6 +291,10 @@ try {
       securityOrigin: new URL(articleUrl).origin,
     })
     assert.ok(!databaseNames.includes("read-frog-personal-notes"))
+    assert.equal(
+      await article.evaluate(() => Object.hasOwn(globalThis, "__zod_globalConfig")),
+      false,
+    )
     await webSession.detach()
     const targetTab = context.waitForEvent("page")
     await article.getByRole("button", { name: "Open Notebase", exact: true }).click()
@@ -390,6 +395,7 @@ try {
     jsonBackup,
     screenshots: process.env.PERSONAL_SMOKE_SCREENSHOTS,
   })
+  await checkScriptPolicy(context, id, extension)
   assert.deepEqual(errors, [])
   if (process.env.READ_FROG_OFFICIAL_PACKAGE) {
     await context.close()

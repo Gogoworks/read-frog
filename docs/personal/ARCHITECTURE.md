@@ -39,6 +39,10 @@
 - 设置迁移继续使用偏好设置中的手动导入、`migrateConfig` 及上游备份。当前配置 schema 为 131。用户原指令的 ID 和输出结构可沿用，重新选择本地目标库即可。个人数据备份记录这些指令 ID 的映射，完整换机还应带上设置 JSON。
 - `src/utils/google-drive/` 单独用扩展身份 OAuth 和 Drive 的 `appDataFolder` 读写配置与术语数据。Google 的回调由 `browser.identity.getRedirectURL()` 根据扩展身份生成。本次构建未配置个人 OAuth 客户端，本地笔记备份使用文件往返。
 
+## 扩展启动时的数据校验
+
+Zod 4 在创建对象校验器时会尝试编译一个空函数，Chrome 的扩展页面策略会记录这次拦截。生产构建的共享模块可能早于入口处的 `z.config({ jitless: true })` 执行。WXT 因此在包含 Zod 运行时的代码块开头启用 `jitless`，也覆盖 `ai-sdk-ollama` 内置的 Zod。初始化仅在能取得扩展运行时 ID 的环境中生效。更新 Zod、Ollama SDK 或打包器后，用浏览器验收脚本检查重新加载和各扩展页面的启动过程。[Chrome 扩展页面安全策略](https://developer.chrome.com/docs/extensions/reference/manifest/content-security-policy?hl=zh-cn#extension_pages_policy)
+
 ## 新增文件
 
 | 位置                                                                       | 职责                                                       |
@@ -60,7 +64,7 @@
 | `AGENTS.md`                                                                                                           | 在上游测试、站点规则和 PR 规范后追加个人版工作约定。                |
 | `package.json`                                                                                                        | 设定本地 Chrome 构建和验收命令，声明 CSV 解析器及测试依赖。         |
 | `pnpm-lock.yaml`                                                                                                      | 锁定 CSV 解析器、IndexedDB 测试实现和浏览器测试客户端。             |
-| `wxt.config.ts`                                                                                                       | 声明个人版名称和固定公钥，沿用上游权限。                            |
+| `wxt.config.ts`                                                                                                       | 声明个人版名称和固定公钥，在扩展校验器初始化前关闭 Zod 动态编译。   |
 | `scripts/dev-local.node-test.mjs`                                                                                     | 用一次性 Git 目录测试工作树选择，使独立 Fork 也能运行这项上游测试。 |
 | `src/components/custom-action/custom-action-panel.tsx`                                                                | 在原结果卡插入本地保存按钮，传入原始选区和来源。                    |
 | `src/components/custom-action/save-to-notebase-button.tsx`                                                            | 与本地入口共用原书签按钮外观，原云端组件仍可独立测试。              |

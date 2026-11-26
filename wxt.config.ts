@@ -189,6 +189,20 @@ export default defineConfig({
       //      reuses for autocomplete/type-checking at every `i18n.t('key')` call site.
       // Runtime UI string lookup itself no longer goes through @wxt-dev/i18n.
       ViteYaml(),
+      {
+        name: "read-frog-zod-jitless",
+        banner(chunk) {
+          // Shared chunks can construct schemas before an entrypoint's z.config() runs.
+          // The Ollama SDK bundles another Zod 4 runtime using the same config object.
+          const hasZodRuntime = chunk.moduleIds.some((id) =>
+            /\/node_modules\/(?:zod\/v4\/core\/core\.[cm]?js|ai-sdk-ollama\/dist\/)/.test(id),
+          )
+          // Keep page-owned JavaScript globals independent of the isolated extension world.
+          return hasZodRuntime
+            ? "if (globalThis.chrome?.runtime?.id || globalThis.browser?.runtime?.id) (globalThis.__zod_globalConfig ??= {}).jitless = true;"
+            : ""
+        },
+      },
       ...(configEnv.mode === "production"
         ? [
             {
