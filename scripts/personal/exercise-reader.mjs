@@ -80,6 +80,11 @@ export async function exerciseReader({ options, context, jsonBackup, screenshots
   const url = options.url()
   const reader = options.getByRole("article", { name: "笔记详情" })
   await reader.getByRole("heading", { level: 1, name: note.cells.lead }).waitFor()
+  assert.deepEqual((await reader.getByRole("heading").allTextContents()).slice(0, 3), [
+    note.cells.lead,
+    "原始选中文字",
+    "重点",
+  ])
   for (const [name, heading, body, count] of [
     ["重点", "晨鸣", "日出前后，先用耳朵发现枝头的鸟。", 2],
     ["回复", "举个例子", "今天最先听见三声短鸣，过了一会儿才看见鸟影。", 1],
@@ -92,7 +97,8 @@ export async function exerciseReader({ options, context, jsonBackup, screenshots
   }
   assert.equal(await reader.getByRole("textbox").count(), 0)
   assert.equal(await reader.getByRole("heading", { name: "解释", exact: true }).count(), 0)
-  await reader.getByText(note.selection, { exact: true }).waitFor()
+  const selection = reader.getByRole("region", { name: "原始选中文字", exact: true })
+  assert.equal(await selection.locator("blockquote").textContent(), note.selection)
   assert.equal(
     await reader.getByRole("link", { name: note.pageTitle }).getAttribute("href"),
     note.origin.url,
@@ -152,8 +158,26 @@ export async function exerciseReader({ options, context, jsonBackup, screenshots
   await direct.goto(url)
   await direct.getByRole("heading", { name: note.cells.lead }).waitFor()
   await direct.getByRole("link", { name: "返回笔记库" }).click()
-  await direct.getByRole("link", { name: new RegExp(note.cells.lead) }).waitFor()
+  const directRow = direct.getByRole("link", { name: new RegExp(note.cells.lead) })
+  await directRow.waitFor()
   assert.equal(direct.url(), listUrl)
+  await directRow.click()
+  const directReader = direct.getByRole("article", { name: "笔记详情" })
+  const openingField = library.fields[0].name
+  for (const opening of ["先听见一声短鸣。\n随后听见两声长鸣。", ""]) {
+    await directReader.getByRole("button", { name: "编辑笔记" }).click()
+    await direct.getByRole("textbox", { name: openingField, exact: true }).fill(opening)
+    await direct.getByRole("button", { name: "保存", exact: true }).click()
+    await directReader.getByRole("heading", { level: 1, name: "笔记详情" }).waitFor()
+    await directReader
+      .getByRole("region", { name: openingField, exact: true })
+      .waitFor({ state: opening ? "visible" : "detached" })
+    const expected = ["笔记详情", ...(opening ? [openingField] : []), "原始选中文字", "重点"]
+    assert.deepEqual(
+      (await directReader.getByRole("heading").allTextContents()).slice(0, expected.length),
+      expected,
+    )
+  }
   await direct.goto(url.replace(note.id, randomUUID()))
   await direct.getByText("找不到这条笔记或它所属的笔记库。", { exact: true }).waitFor()
   await direct.close()

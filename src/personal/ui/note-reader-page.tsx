@@ -1,4 +1,4 @@
-import type { Library, Note } from "../notes/model"
+import type { Field, Library, Note } from "../notes/model"
 import { IconArrowLeft, IconPencil, IconTrash } from "@tabler/icons-react"
 import { useCallback, useState } from "react"
 import { Link, useLocation, useNavigate, useParams } from "react-router"
@@ -16,17 +16,7 @@ import { ErrorText, useNotesQuery } from "./shared"
 function Provenance({ note, library }: { note: Note; library: Library }) {
   const origin = note.origin
   return (
-    <footer className="space-y-6 border-t pt-6">
-      {note.selection && (
-        <section>
-          <h2 className="mb-2 text-sm font-medium text-muted-foreground">
-            {i18n.t("personal.selection")}
-          </h2>
-          <blockquote className="border-l-2 pl-4 leading-7 whitespace-pre-wrap">
-            {note.selection}
-          </blockquote>
-        </section>
-      )}
+    <footer className="border-t pt-6">
       <dl className="grid gap-x-8 gap-y-4 rounded-xl border bg-muted/25 p-4 text-sm sm:grid-cols-2">
         <div className="space-y-1">
           <dt className="text-muted-foreground">{i18n.t("personal.source")}</dt>
@@ -92,6 +82,7 @@ function NoteArticle({
   const fields = library.fields.filter((f) => hasCellContent(note.cells[f.id]))
   const first = fields[0]
   const firstValue = first && readCell(note.cells[first.id])
+  const openingField = typeof firstValue === "string" ? first : undefined
   const lead =
     typeof firstValue === "string" && firstValue.trim().length <= 120 && !/[\r\n]/.test(firstValue)
       ? firstValue.trim()
@@ -102,6 +93,15 @@ function NoteArticle({
       <section className="space-y-6">
         <h1 className="text-2xl font-semibold">{i18n.t("personal.editNote")}</h1>
         <NoteEditor note={editing} library={library} onClose={() => setEditing(undefined)} />
+      </section>
+    )
+  }
+
+  function renderField(field: Field) {
+    return (
+      <section key={field.id} aria-label={field.name} className="space-y-3">
+        <h2 className="text-lg font-semibold tracking-tight">{field.name}</h2>
+        <ReadableValue value={note.cells[field.id]} />
       </section>
     )
   }
@@ -120,13 +120,19 @@ function NoteArticle({
           {i18n.t("personal.editNote")}
         </Button>
       </header>
-      {(lead ? fields.slice(1) : fields).map((field) => (
-        <section key={field.id} aria-label={field.name} className="space-y-3">
-          <h2 className="text-lg font-semibold tracking-tight">{field.name}</h2>
-          <ReadableValue value={note.cells[field.id]} />
+      {openingField && !lead && renderField(openingField)}
+      {hasCellContent(note.selection) && (
+        <section aria-label={i18n.t("personal.selection")}>
+          <h2 className="mb-2 text-sm font-medium text-muted-foreground">
+            {i18n.t("personal.selection")}
+          </h2>
+          <blockquote className="border-l-2 pl-4 leading-7 whitespace-pre-wrap">
+            {note.selection}
+          </blockquote>
         </section>
-      ))}
-      {!fields.length && <p className="text-muted-foreground">{i18n.t("personal.emptyFields")}</p>}
+      )}
+      {(openingField ? fields.slice(1) : fields).map(renderField)}
+      {!first && <p className="text-muted-foreground">{i18n.t("personal.emptyFields")}</p>}
       <Provenance note={note} library={library} />
       {note.output.length > 0 && (
         <details className="rounded-xl border px-4 py-3">

@@ -217,7 +217,12 @@ export async function exerciseManagement({ options, optionsUrl, context, jsonBac
     .getByRole("alertdialog")
     .getByRole("button", { name: "Import", exact: true })
     .click()
-  await options.getByRole("link", { name: /蛙/ }).waitFor()
+  const importedRow = options.getByRole("link", { name: /蛙/ })
+  await importedRow.click()
+  await reader.getByRole("heading", { level: 1, name: "蛙" }).waitFor()
+  assert.equal(await reader.getByRole("heading", { name: "Original selection" }).count(), 0)
+  await options.getByRole("link", { name: "Back to notebook" }).click()
+  await importedRow.waitFor()
   for (const scheme of ["dark", "light"]) {
     await options.emulateMedia({ colorScheme: scheme })
     await options.waitForFunction((s) => document.documentElement.classList.contains(s), scheme)
