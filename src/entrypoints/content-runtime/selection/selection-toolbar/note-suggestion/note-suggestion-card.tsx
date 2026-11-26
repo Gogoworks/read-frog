@@ -4,7 +4,6 @@ import type { NoteSuggestionNoteRecord } from "@/utils/note-suggestion/types"
 import { IconBookmarkPlus } from "@tabler/icons-react"
 import { useAtom } from "jotai"
 import { useEffect, useId, useRef, useState } from "react"
-import { useSaveToNotebase } from "@/components/custom-action/use-save-to-notebase"
 import { Button } from "@/components/ui/base-ui/button"
 import { Checkbox } from "@/components/ui/base-ui/checkbox"
 import {
@@ -17,7 +16,9 @@ import {
 import { Label } from "@/components/ui/base-ui/label"
 import { Switch } from "@/components/ui/base-ui/switch"
 import { toastManager } from "@/components/ui/base-ui/toast"
+import { usePersonalSave } from "@/personal/ui/use-save"
 import { configFieldsAtomMap } from "@/utils/atoms/config"
+import { getSourceDocumentTitle } from "@/utils/content/document-title"
 import { findSelectionToolbarAction } from "@/utils/custom-actions"
 import { i18n } from "@/utils/i18n"
 import { trackNoteSuggestionEvent } from "@/utils/note-suggestion/analytics"
@@ -78,15 +79,17 @@ export function NoteSuggestionCard({
   suggestion,
   markShownOnce,
   noteOrigin,
+  selection,
 }: {
   suggestion: NoteSuggestionSessionResult
   markShownOnce: (sessionKey: string) => boolean
+  selection: string
   /** Where the translated selection was made. */
   noteOrigin: NoteOriginInput | null
 }) {
   const { sessionKey, validated, actionSnapshot, firedAt, analyticsProvider } = suggestion
   const [selectionToolbar, setSelectionToolbar] = useAtom(configFieldsAtomMap.selectionToolbar)
-  const { save, isSaving } = useSaveToNotebase()
+  const { save, isSaving } = usePersonalSave()
   const [saveState, setSaveState] = useState<"idle" | "saved" | "stale">("idle")
   // Save re-enables after a failed save or a dismissed dialog; a retry is not
   // another acceptance.
@@ -141,8 +144,7 @@ export function NoteSuggestionCard({
       return
     }
 
-    // Accepting is the click. Whether the notes reached the Notebase, possibly
-    // after a login round trip, is reported by note_save.
+    // Record one acceptance, including when the reader retries a failed write.
     if (!acceptanceTrackedRef.current) {
       acceptanceTrackedRef.current = true
       trackNoteSuggestionEvent({
@@ -155,7 +157,8 @@ export function NoteSuggestionCard({
     const outcome = await save({
       action: liveAction,
       results: selectedNotes,
-      analyticsSource: "note_suggestion",
+      selection,
+      pageTitle: getSourceDocumentTitle(),
       origin: noteOrigin,
     })
     if (outcome === "saved") {

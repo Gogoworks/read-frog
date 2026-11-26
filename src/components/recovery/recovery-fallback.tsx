@@ -69,14 +69,7 @@ export function RecoveryFallback({ error, onRecovered }: RecoveryFallbackProps) 
           <div className="flex flex-wrap gap-2">
             <Button
               variant="outline"
-              onClick={() => exportConfig(true)}
-              disabled={isExporting || isResetting}
-            >
-              {i18n.t("errorRecovery.exportWithApiKeys")}
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => exportConfig(false)}
+              onClick={() => exportConfig()}
               disabled={isExporting || isResetting}
             >
               {i18n.t("errorRecovery.exportWithoutApiKeys")}

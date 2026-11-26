@@ -1,3 +1,4 @@
+import type { NotebaseColumn } from "@read-frog/api-contract"
 import type { NotebaseRowCreateInput } from "@read-frog/api-contract"
 import type { SelectionToolbarCustomAction } from "@/types/config/selection-toolbar"
 import { describe, expect, it } from "vitest"
@@ -17,8 +18,6 @@ import {
   resolveNotebaseMappings,
   skipNotebaseFields,
 } from "../notebase/mapping"
-
-type NotebaseColumn = Parameters<typeof createNameMatchedNotebaseMappings>[1][number]
 
 function createColumn(id: string, name: string, config: NotebaseColumn["config"]): NotebaseColumn {
   return {

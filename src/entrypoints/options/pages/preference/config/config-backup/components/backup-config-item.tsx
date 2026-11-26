@@ -141,7 +141,6 @@ function RestoreButton({ backup }: { backup: ConfigBackup }) {
 
 function MoreOptions({ backupId, backup }: { backupId: string; backup: ConfigBackup }) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
-  const [showExportDialog, setShowExportDialog] = useState(false)
 
   const { mutate: deleteBackup, isPending: isDeleting } = useMutation({
     mutationFn: async (backupIdToDelete: string) => {
@@ -170,7 +169,7 @@ function MoreOptions({ backupId, backup }: { backupId: string; backup: ConfigBac
           <Icon icon="tabler:dots" />
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-40" align="end">
-          <DropdownMenuItem onClick={() => setShowExportDialog(true)} disabled={isExporting}>
+          <DropdownMenuItem onClick={() => exportConfig()} disabled={isExporting}>
             <Icon icon="tabler:file-export" />
             {i18n.t("options.preference.config.backup.item.export")}
           </DropdownMenuItem>
@@ -204,39 +203,6 @@ function MoreOptions({ backupId, backup }: { backupId: string; backup: ConfigBac
             >
               {i18n.t("options.preference.config.backup.delete.confirm")}
             </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      <AlertDialog open={showExportDialog} onOpenChange={setShowExportDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              {i18n.t("options.preference.config.manualSync.exportOptions.title")}
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              {i18n.t("options.preference.config.manualSync.exportOptions.description")}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="flex justify-between!">
-            <AlertDialogCancel>
-              {i18n.t("options.preference.config.manualSync.exportOptions.cancel")}
-            </AlertDialogCancel>
-            <div className="flex gap-2">
-              <AlertDialogAction
-                variant="secondary"
-                onClick={() => exportConfig(true, { onSettled: () => setShowExportDialog(false) })}
-                disabled={isExporting}
-              >
-                {i18n.t("options.preference.config.manualSync.exportOptions.includeAPIKeys")}
-              </AlertDialogAction>
-              <AlertDialogAction
-                onClick={() => exportConfig(false, { onSettled: () => setShowExportDialog(false) })}
-                disabled={isExporting}
-              >
-                {i18n.t("options.preference.config.manualSync.exportOptions.excludeAPIKeys")}
-              </AlertDialogAction>
-            </div>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

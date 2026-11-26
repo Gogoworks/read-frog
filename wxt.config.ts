@@ -38,22 +38,18 @@ export default defineConfig({
         "@read-frog/layout-engine": path.resolve(monorepoRoot, "packages/layout-engine/src"),
       }
     : {},
-  manifest: ({ mode, browser }) => ({
-    name: "__MSG_extName__",
+  manifest: ({ browser }) => ({
+    name: "Read Frog Personal",
     description: "__MSG_extDescription__",
     default_locale: "en",
-    // Fixed extension ID for development
-    ...(mode === "development" &&
-      (browser === "chrome" || browser === "edge") && {
-        key: "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAw2KhiXO2vySZtPu5pNSbyKhYavh8Be7gXmCZt8aJf6tQ/L3JK0qzL+3JSc/o20td3Jw+B2Dcw+EI93NAZr24xKnTNXQiJpuIuHb8xLXD0Ra/HrTVi4TJIhPdESogoG4uL6CD/F3TxfZJ2trX4Bt9cdAw1RGGeU+xU0g+YFfEka4ZUCpFAmTEw9H3/DU+nCp8yGaJWyiVgCTcFe38GZKEPt0iMJkTw956wz/iiafLx0pNG/RaztG9cAPoQOD2+SMFaeQ+b/G4OG17TYhzb09AhNBl6zSJ3jTKHSwuedCFwCce8Q/EchJfQZv71mjAE97bzwvkDYPCLj31Z5FE8HntMwIDAQAB",
-      }),
+    // A public identity for unpacked Personal releases, independent of the build directory.
+    ...((browser === "chrome" || browser === "edge") && {
+      key: "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAt6z5cggFqNhE9T7g5PbDvQPl3+y6JebYRVDqcuuhq0dRtSvLH4XK4QMneOyBXB4qa7LXbOJcHLEmb/yxqNuNH23+qCV5ToOJU9k8o3ed8d5p4GvJxHQFOiD8YYA64sCnbpMmWrnwD4G0bxYKzJRa851djBdidivC1phfc+RBHFufHYfgpofsY/RCehbvyfGRWWY1W99NAaakAeRAbcro8IPAWJOTgDSswKlqJJcAf+7o5tsYslr6BGqG/3FCnQ8t5b/nm6aLdwgzW6GX5/Ann4kYsmSOnem4kn2jdU7w0pLyMlv3XcJtrVepieSSbXWpr1PItfvsSJZIdamYu3DnPwIDAQAB",
+    }),
     permissions: [
       "storage",
-      // The glossary is the only user-authored, non-regenerable data the
-      // extension stores locally. Without this, IndexedDB is "best-effort" and
-      // the browser may evict it under disk pressure — fine for the translation
-      // caches, data loss for a term list the user typed by hand. It also lifts
-      // the 10 MB quota the 20,000-term cap would otherwise sit close to.
+      // The user glossary and Personal notebooks are persistent, user-authored
+      // data. Keep the upstream permission protecting extension-owned IndexedDB.
       "unlimitedStorage",
       "tabs",
       "alarms",
@@ -186,7 +182,7 @@ export default defineConfig({
       // That module reads the same .yml files via its own fs-based mechanism — a separate
       // path from this Vite `import` — and is kept ONLY for two build-time jobs it still owns:
       //   1. Emitting `_locales/*/messages.json`, which the browser uses to localize the
-      //      manifest `__MSG_extName__` / `__MSG_extDescription__` below. That is chosen by
+      //      localized manifest description. That is chosen by
       //      the browser UI language at load time and is NOT runtime-switchable (platform
       //      constraint), so it stays with @wxt-dev/i18n.
       //   2. Generating the `#i18n` key types (.wxt/i18n/structure.d.ts) that the facade

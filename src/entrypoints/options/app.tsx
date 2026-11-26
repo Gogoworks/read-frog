@@ -9,6 +9,7 @@ import { switchedOffFeature } from "@/utils/features"
 import { getRouteFeature, ROUTE_DEFS } from "./app-sidebar/nav-items"
 import { buildSimpleModeRowLink } from "./pages/advanced/simple-mode/links"
 
+const LocalNotesPage = lazy(() => import("@/personal/ui/notes-page"))
 const UsagePage = lazy(() =>
   import("./pages/usage").then((module) => ({ default: module.UsagePage })),
 )
@@ -145,6 +146,7 @@ const ROUTE_COMPONENTS: Record<RoutePath, ComponentType> = {
   "/shortcuts": ShortcutsPage,
   "/api-providers": ApiProvidersPage,
   "/custom-actions": CustomActionsPage,
+  "/local-notes": LocalNotesPage,
   "/page-translation": TranslationPage,
   "/video-subtitles": VideoSubtitlesPage,
   "/floating-button": FloatingButtonPage,

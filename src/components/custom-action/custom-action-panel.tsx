@@ -9,6 +9,7 @@ import { ReviewDueTab } from "@/components/ui/selection-popover/review-due-tab"
 import { SelectionToolbarErrorAlert } from "@/components/ui/selection-popover/selection-toolbar-error-alert"
 import { SelectionToolbarFooterContent } from "@/components/ui/selection-popover/selection-toolbar-footer-content"
 import { SelectionToolbarTitleContent } from "@/components/ui/selection-popover/selection-toolbar-title-content"
+import { PersonalSaveButton } from "@/personal/ui/save-button"
 import { ANALYTICS_FEATURE, ANALYTICS_SURFACE } from "@/types/analytics"
 import { createFeatureUsageContext, trackFeatureUsed } from "@/utils/analytics"
 import { classifyResolvedProvider } from "@/utils/analytics-provider"
@@ -22,7 +23,6 @@ import {
 import { customActionRequestAtom } from "./atoms"
 import { CustomActionContent } from "./custom-action-content"
 import { CustomActionToolButton } from "./custom-action-tool-button"
-import { SaveToNotebaseButton } from "./save-to-notebase-button"
 import {
   buildCustomActionExecutionPlan,
   useCustomActionExecution,
@@ -197,12 +197,12 @@ export function CustomActionPanel({
       >
         {action && (
           <>
-            <SaveToNotebaseButton
+            <PersonalSaveButton
               action={action}
               failed={!!error}
               isRunning={isRunning}
               result={result}
-              surface={cardSurface}
+              selection={request.selectionText}
               getNoteOrigin={getNoteOrigin ?? (() => request.noteOrigin)}
             />
             <CustomActionToolButton action={action} />

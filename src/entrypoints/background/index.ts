@@ -2,6 +2,7 @@ import "@/utils/zod-config"
 import type { Config, UiLanguage } from "@/types/config/config"
 import { browser, defineBackground } from "#imports"
 import { env } from "@/env"
+import { personalNotes } from "@/personal/notes/store"
 import { storageAdapter } from "@/utils/atoms/storage-adapter"
 import { getFreeTranslateProviderId } from "@/utils/config/free-translate-provider"
 import { CONFIG_STORAGE_KEY } from "@/utils/constants/config"
@@ -55,6 +56,7 @@ export default defineBackground({
     // First, so nothing below logs before the local log is there to keep it.
     setupBackgroundLogging()
     setupDiagnosticsHandlers()
+    onMessage("savePersonalNotes", ({ data }) => personalNotes().save(data))
     log.debug("Hello background!", { id: browser.runtime.id })
 
     browser.runtime.onInstalled.addListener(async (details) => {

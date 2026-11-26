@@ -373,6 +373,9 @@ importers:
       css-tree:
         specifier: ^3.2.1
         version: 3.2.1
+      csv-parse:
+        specifier: ^7.0.3
+        version: 7.0.3
       debounce:
         specifier: ^4.0.0
         version: 4.0.0
@@ -527,6 +530,9 @@ importers:
       eruda:
         specifier: ^3.4.3
         version: 3.4.3
+      fake-indexeddb:
+        specifier: ^6.2.8
+        version: 6.2.8
       husky:
         specifier: ^9.1.7
         version: 9.1.7
@@ -557,6 +563,9 @@ importers:
       oxlint-tsgolint:
         specifier: ^7.0.2007
         version: 7.0.2007
+      playwright-core:
+        specifier: ^1.65.1
+        version: 1.65.1
       postcss:
         specifier: ^8.5.33
         version: 8.5.33
@@ -3652,6 +3661,9 @@ packages:
   csstype@3.2.3:
     resolution: {integrity: sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3UVJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ==}
 
+  csv-parse@7.0.3:
+    resolution: {integrity: sha512-YFd3QM/yo17vH91L1IOZuvl09zM0zEEtdfTcOCKWcMdM++MNaQSyp09slXyFCLaPXvHstQFx/xC8myiFHSMUvw==}
+
   data-urls@8.0.0:
     resolution: {integrity: sha512-JQUCCK+/CAGbGGx618PlFZMXH81Jtj7t73CHv9dd/zVWvxgGT2zLFRjnKb+Ng46GIwcy+f7f88qd4duqllK+WQ==}
     engines: {node: ^22.14.0 || >=24.0.0}
@@ -4027,6 +4039,10 @@ packages:
 
   extend@3.0.2:
     resolution: {integrity: sha512-fjquC59cD7CyW6urNXK0FBufkZcoiGG80wTuPujX590cB5Ttln20E2UB4S/WARVqhXffZl2LNgS+gQdPIIim/g==}
+
+  fake-indexeddb@6.2.8:
+    resolution: {integrity: sha512-mpVW/HLUqwKXJ6F/s0hMgdK1eQfM4ncTHDioNGHWL0WKV3VcZCoZq1NKgboBbAge07aRCO7L48yziKssL59XEQ==}
+    engines: {node: '>=18'}
 
   fast-deep-equal@3.1.3:
     resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==}
@@ -5517,6 +5533,11 @@ packages:
 
   pkg-types@2.3.0:
     resolution: {integrity: sha512-SIqCzDRg0s9npO5XQ3tNZioRY1uK06lA41ynBC1YmFTmnY6FjUjVt6s4LoADmwoig1qqD0oK8h1p/8mlMx8Oig==}
+
+  playwright-core@1.65.1:
+    resolution: {integrity: sha512-hqPpz7blSMPxWVdoeE1yiBSzXsKiVOd2k+kjCvmUywD2GPO2Dd9HfcWnq9NN0GHbNZDFgZ9JfBFr+X5/BLo0qw==}
+    engines: {node: '>=20'}
+    hasBin: true
 
   postcss-plugin-shared@1.2.0:
     resolution: {integrity: sha512-59tBkBp4NPvsEdj0KigDh6jrin7Zu5pUIkn+qrnuGRlFX1NINjSTeNgrpCTgvdUv6KuDvLFsrexXB7rNu9W09Q==}
@@ -9700,6 +9721,8 @@ snapshots:
 
   csstype@3.2.3: {}
 
+  csv-parse@7.0.3: {}
+
   data-urls@8.0.0(@noble/hashes@2.2.0):
     dependencies:
       whatwg-mimetype: 5.0.0
@@ -10089,6 +10112,8 @@ snapshots:
   exsolve@1.0.8: {}
 
   extend@3.0.2: {}
+
+  fake-indexeddb@6.2.8: {}
 
   fast-deep-equal@3.1.3: {}
 
@@ -11609,6 +11634,8 @@ snapshots:
       confbox: 0.2.4
       exsolve: 1.0.8
       pathe: 2.0.3
+
+  playwright-core@1.65.1: {}
 
   postcss-plugin-shared@1.2.0(postcss@8.5.33):
     dependencies:

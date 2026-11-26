@@ -56,13 +56,13 @@ export function createNotebaseMapping(
   }
 }
 
-export function isSupportedNotebaseColumnConfig(config: NotebaseColumnConfig) {
+export function isSupportedNotebaseColumnConfig(config: Pick<NotebaseColumnConfig, "type">) {
   return config.type === "string" || config.type === "number"
 }
 
 export function isNotebaseMappingCompatible(
   localType: SelectionToolbarCustomActionOutputType,
-  notebaseColumnConfig: NotebaseColumnConfig,
+  notebaseColumnConfig: NotebaseColumnConfig | Pick<NotebaseColumnConfig, "type">,
 ) {
   return (
     isSupportedNotebaseColumnConfig(notebaseColumnConfig) && localType === notebaseColumnConfig.type
@@ -81,8 +81,10 @@ function normalizeMappingName(name: string) {
  * column stay unmapped for the reader to pick instead of being guessed.
  */
 export function createNameMatchedNotebaseMappings(
-  outputSchema: readonly SelectionToolbarCustomActionOutputField[],
-  notebaseColumns: readonly NotebaseColumn[],
+  outputSchema: readonly Pick<SelectionToolbarCustomActionOutputField, "id" | "type" | "name">[],
+  notebaseColumns: readonly (Pick<NotebaseColumn, "id" | "name"> & {
+    config: Pick<NotebaseColumnConfig, "type">
+  })[],
 ): SelectionToolbarCustomActionNotebaseMapping[] {
   const usedColumnIds = new Set<string>()
   const mappings: SelectionToolbarCustomActionNotebaseMapping[] = []

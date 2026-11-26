@@ -609,6 +609,7 @@ export function SelectionTranslationProvider({ children }: { children: ReactNode
                 <NoteSuggestionCard
                   key={noteSuggestion.sessionKey}
                   suggestion={noteSuggestion}
+                  selection={selectionText ?? ""}
                   markShownOnce={markNoteSuggestionShownOnce}
                   noteOrigin={activeSession?.noteOrigin ?? null}
                 />

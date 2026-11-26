@@ -1,0 +1,58 @@
+# 第一期验收记录
+
+验收日期为 2026-11-26。环境为 macOS arm64、pnpm 12.21.0、项目 Node.js 26.13.1、WXT 0.21.5、Chrome for Testing 151.0.7922.34。生产构建的扩展是 Read Frog Personal 1.62.1，Manifest V3。
+
+## 构建和回归
+
+| 运行对象         | 实际结果                                                                                                                                                                                                |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 原版 `faebc639`  | 冻结锁文件安装完成，项目指定的 Dexie 和 WXT 可用。用仓库的可选部署环境开关构建 Chrome 成功，类型与 lint 检查通过。Vitest 526 个测试文件通过，1 个文件跳过，合计 5,878 项通过、10 项跳过。               |
+| 个人版           | 冻结依赖可安装，常规 `build` 生成约 18.36 MB 的解压目录。类型与 lint、格式检查通过。Vitest 528 个文件通过，1 个文件跳过，合计 5,888 项通过、10 项跳过。                                                 |
+| 上游本地开发脚本 | `test:dev-local` 两项通过。原测试的默认路径需要相邻的官方 monorepo，在此独立 Fork 上第一次运行失败。改为使用一次性的 Git 目录后，仍测试真实的根目录判断、工作树 URL 和 API 身份校验。生产脚本没有修改。 |
+| 新增存储测试     | 模拟 IndexedDB 验证并发首次保存、重试去重、整批回滚、空或失效映射、编辑冲突、来源搜索、类型与时间、备份兼容校验、重复导入和 CSV 转义。另测当前与早期服务商配置的导出去凭据。                            |
+
+上游 `AGENTS.md` 要求本地使用 `SKIP_FREE_API=true`。跳过部分包括需访问真实免费翻译服务的测试，计数取自 Vitest。官方发行环境还要求 `WXT_GOOGLE_CLIENT_ID`、`WXT_POSTHOG_HOST` 和 `WXT_POSTHOG_API_KEY`。原版基线使用 `WXT_SKIP_ENV_VALIDATION=true` 使这些部署参数可选。个人版的 Chrome 构建脚本已设置这一项。
+
+## 在实际 Chrome 中操作过的功能
+
+使用专用的 headless Chrome for Testing 加载生产目录。全程用新建的测试资料和本机 HTTP 模拟服务，公网域名解析被阻断。测试下载真实导出文件，并在关闭、重新启动整个浏览器进程后核对记录。
+
+| 项目                     | 验收方法与结果                                                                                                                                                                                                                                     |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 安装和独立身份           | Chrome 实际启动了个人版 service worker，弹窗和设置页都可交互。公钥计算值与浏览器实际 ID 一致。另将官方 1.61.2 的公开程序文件复制到临时目录，在同一个测试资料同时启用两版。两个 origin 的设置页均可打开，官方版看不到个人版的存储标记和 IndexedDB。 |
+| 设置迁移与指令编辑       | 从原版格式设置文件导入两个指令，在两个提供商编辑器分别填写临时测试密钥和本机地址。通过模板创建新指令并修改名称，确认自动保存。设置重新导出后仍有指令，测试凭据已过滤。                                                                             |
+| OpenAI 与 Gemini         | 从真实网页划词工具栏分别执行指令，扩展原 SDK 发出 OpenAI Responses 和 Gemini streamGenerateContent 请求，本机服务校验认证请求头并返回流式响应。界面显示了选中文字及文本、数字结构化输出。                                                          |
+| 离线保存与扩展私有存储   | 两个结果显示后分别将浏览器置为离线，再点击原书签按钮。两个指令各自建立笔记库。下载的 JSON 中核实网页 URL、标题、选区及数值 42。通过 Chrome DevTools 协议核实网页 origin 没有笔记数据库。整个测试未登录 Read Frog。                                 |
+| 划词翻译与批量建议       | 真实划词翻译展示本机响应，出现两项笔记建议。切换复选框，再在断网时一次保存两条。两条记录都带有指令、原选区和正确的网页来源。                                                                                                                       |
+| 手动建库、改名和字段映射 | 从设置界面建库并改名，把 Meaning 映射到文本列 Gloss、Score 映射到数字列 Rank。保存后验证关联，并从后台写入该目标库。                                                                                                                               |
+| 第 11 和第 100 条        | 在同一个手动映射的库中，用真实后台消息按 10、1、89 条离线写入。管理页在每次事务后更新，实际看到 11 及 100 条，备份里也恰有该库的 100 条记录。此数量测试使用合成笔记。真实按钮另由上述单条和双条流程覆盖。                                          |
+| 管理与数据恢复           | 实际查看详情、编辑单元格、搜索修改内容、切换创建时间排序、翻页、取消或确认删除笔记及整库。下载 CSV，检查 BOM、字段及编辑值。JSON 恢复已删除的库，再次导入保持相同。未知版本显示错误，遇到内容冲突弹出提示，回读快照完全一致。                      |
+| 导入官方 CSV             | 通过文件选择框导入含中文的官方格式样本。显示新库和对应值。逗号、嵌套引号、单元格换行、公式前缀和改文件名去重另有自动化测试。                                                                                                                       |
+| 重启与界面               | 完全退出并使用同一临时资料重启 Chrome，逐项比较导出的 JSON，105 条合成笔记、库和映射均一致。检查简体中文设置入口和操作名称，并在明暗两种系统主题中实际渲染、截图检查。                                                                             |
+
+测试期间未捕获个人版页面 JavaScript 未处理异常。阻断外网时，上游从 Iconify 和 unpkg 请求的一些图标资源会出现在控制台的 DNS 错误中，个别图标可能留空。保存、表单和导出均已在此条件下完成。
+
+## 凭据与外部服务的验证范围
+
+- 这次没有发送真实 OpenAI 或 Gemini 计费请求。已验证本地配置、真实 SDK 请求格式、响应解析、展示及保存。用户账号的额度、模型权限和连通性需在用户自己的服务商环境中确认。
+- 官方笔记迁移依据公开 CSV 说明及匹配格式的样本，未访问用户的云端笔记。公开视频或电子书来源的结构沿用上游并经过相关单测，本轮真实网页端到端场景使用普通文章。Google Drive OAuth、真实云同步和官方复习服务未做实账号验收。[官方 CSV 说明](https://www.readfrog.app/en/docs/notebase/import-export)
+- 对生成目录检查了 manifest 所指的后台、设置、弹窗、内容脚本和图标文件，并扫描测试密钥、私钥及常见 OpenAI / Google Key 格式。Google 格式唯一命中与原版 `src/utils/host/translate/api/google.ts` 内置的 Google Translate 常量相同。个人版开发和构建没有使用任何个人 API Key。
+
+## 重跑验收
+
+```sh
+corepack pnpm install --frozen-lockfile
+corepack pnpm lint
+corepack pnpm fmt:check
+SKIP_FREE_API=true WXT_SKIP_ENV_VALIDATION=true corepack pnpm test --maxWorkers=6
+corepack pnpm test:dev-local
+corepack pnpm build
+corepack pnpm test:personal:chrome
+```
+
+Chrome 验收默认寻找 playwright-core 对应的 Chrome for Testing。已装在其他位置时，执行前设置 `CHROME_FOR_TESTING_EXECUTABLE` 为该浏览器的可执行文件完整路径。可选的 `PERSONAL_SMOKE_SCREENSHOTS` 指定主题截图输出目录。`READ_FROG_OFFICIAL_PACKAGE` 可指向包含官方商店版 `manifest.json` 的公开程序目录，以开启两版并存验收。测试只复制其中的程序文件，临时资料和测试笔记在结束时清理。
+
+```sh
+CHROME_FOR_TESTING_EXECUTABLE="/Users/rick/Library/Caches/ms-playwright/chromium-1234/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing" \
+  corepack pnpm test:personal:chrome
+```

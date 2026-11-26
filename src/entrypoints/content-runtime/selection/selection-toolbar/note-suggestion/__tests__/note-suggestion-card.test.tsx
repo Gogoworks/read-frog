@@ -17,8 +17,8 @@ const mocks = vi.hoisted(() => ({
   track: vi.fn<(...args: any[]) => any>(),
 }))
 
-vi.mock("@/components/custom-action/use-save-to-notebase", () => ({
-  useSaveToNotebase: () => ({ save: mocks.save, isSaving: false }),
+vi.mock("@/personal/ui/use-save", () => ({
+  usePersonalSave: () => ({ save: mocks.save, isSaving: false }),
 }))
 
 vi.mock("@/components/ui/base-ui/toast", () => ({
@@ -109,6 +109,7 @@ function renderCard(
       suggestion={createSuggestion(actionSnapshot, notes)}
       markShownOnce={() => false}
       noteOrigin={PAGE_ORIGIN}
+      selection="original selection"
     />,
     { wrapper: wrapper(store) },
   )
@@ -136,7 +137,8 @@ describe("NoteSuggestionCard", () => {
     expect(mocks.save).toHaveBeenCalledWith({
       action: liveAction,
       results: [{ Term: "ephemeral", Definition: "lasting a very short time" }],
-      analyticsSource: "note_suggestion",
+      selection: "original selection",
+      pageTitle: expect.any(String),
       origin: PAGE_ORIGIN,
     })
     expect(mocks.toastAdd).not.toHaveBeenCalled()

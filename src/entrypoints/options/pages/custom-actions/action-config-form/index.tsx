@@ -2,6 +2,7 @@ import type { SelectionToolbarCustomAction } from "@/types/config/selection-tool
 import { dequal } from "dequal"
 import { useAtomValue } from "jotai"
 import { useState } from "react"
+import { LocalConnection } from "@/personal/ui/connection"
 import { configFieldsAtomMap } from "@/utils/atoms/config"
 import { isBuiltInActionId } from "@/utils/constants/custom-action"
 import { findSelectionToolbarAction } from "@/utils/custom-actions"
@@ -61,7 +62,7 @@ function BuiltInEditor({ action }: { action: SelectionToolbarCustomAction }) {
                 <ActionEditor.Layout.ReadOnly />
               </EntityEditor.Body>
             }
-            notebase={<ActionEditor.NotebaseConnectionField variant="tab" />}
+            notebase={<LocalConnection action={action} />}
           />
         </EntityEditor.Root>
       </ActionEditor.Form>
@@ -88,7 +89,7 @@ function EditableActionEditor({ action }: { action: SelectionToolbarCustomAction
                 <ActionEditor.Layout.Editable />
               </EntityEditor.Body>
             }
-            notebase={<ActionEditor.NotebaseConnectionField variant="tab" />}
+            notebase={<LocalConnection action={action} />}
           />
           <EntityEditor.Footer>
             <ActionEditor.DuplicateButton />

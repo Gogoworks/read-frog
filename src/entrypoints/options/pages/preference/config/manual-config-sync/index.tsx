@@ -1,18 +1,6 @@
 import { Icon } from "@iconify/react"
 import { useMutation } from "@tanstack/react-query"
 import { useAtomValue, useSetAtom } from "jotai"
-import { useState } from "react"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/base-ui/alert-dialog"
 import { Button } from "@/components/ui/base-ui/button"
 import { Input } from "@/components/ui/base-ui/input"
 import { Label } from "@/components/ui/base-ui/label"
@@ -224,52 +212,21 @@ function ImportConfig() {
 }
 
 function ExportConfig() {
-  const [open, setOpen] = useState(false)
   const config = useAtomValue(configAtom)
-
-  const { mutate: exportConfig, isPending: isExporting } = useExportConfig({
+  const { mutate: exportConfig, isPending } = useExportConfig({
     config,
     schemaVersion: CONFIG_SCHEMA_VERSION,
   })
-
   return (
-    <AlertDialog open={open} onOpenChange={setOpen}>
-      <AlertDialogTrigger render={<Button variant="outline" size="sm" disabled={isExporting} />}>
-        <Icon icon="tabler:file-export" />
-        {i18n.t("options.preference.config.manualSync.export")}
-      </AlertDialogTrigger>
-
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>
-            {i18n.t("options.preference.config.manualSync.exportOptions.title")}
-          </AlertDialogTitle>
-          <AlertDialogDescription>
-            {i18n.t("options.preference.config.manualSync.exportOptions.description")}
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-
-        <AlertDialogFooter className="flex justify-between!">
-          <AlertDialogCancel>
-            {i18n.t("options.preference.config.manualSync.exportOptions.cancel")}
-          </AlertDialogCancel>
-          <div className="flex gap-2">
-            <AlertDialogAction
-              variant="secondary"
-              onClick={() => exportConfig(true, { onSettled: () => setOpen(false) })}
-              disabled={isExporting}
-            >
-              {i18n.t("options.preference.config.manualSync.exportOptions.includeAPIKeys")}
-            </AlertDialogAction>
-            <AlertDialogAction
-              onClick={() => exportConfig(false, { onSettled: () => setOpen(false) })}
-              disabled={isExporting}
-            >
-              {i18n.t("options.preference.config.manualSync.exportOptions.excludeAPIKeys")}
-            </AlertDialogAction>
-          </div>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+    <Button
+      variant="outline"
+      size="sm"
+      onClick={() => exportConfig()}
+      disabled={isPending}
+      title={i18n.t("personal.portableConfig")}
+    >
+      <Icon icon="tabler:file-export" />
+      {i18n.t("options.preference.config.manualSync.export")}
+    </Button>
   )
 }

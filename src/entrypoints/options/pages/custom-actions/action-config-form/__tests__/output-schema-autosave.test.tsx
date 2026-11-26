@@ -19,7 +19,7 @@ import { selectedCustomActionIdAtom } from "../../atoms"
 // Keep remote discovery/auth out of this test. The schema editor, parent form,
 // validation, autosave controller, entity writer and navigation are all real.
 vi.mock("../provider-field", () => ({ ProviderField: () => null }))
-vi.mock("../notebase-connection-field", () => ({ NotebaseConnectionField: () => null }))
+vi.mock("@/personal/ui/connection", () => ({ LocalConnection: () => null }))
 // The layout's CodeMirror editor and shadow-DOM preview are verified in a browser; the rename
 // and delete paths below only touch the form's `layout` value.
 vi.mock("../layout-field", () => ({ LayoutField: () => null, ReadOnlyLayoutField: () => null }))

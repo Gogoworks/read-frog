@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query"
 import { kebabCase } from "case-anything"
 import { saveAs } from "file-saver"
 import { toastManager } from "@/components/ui/base-ui/toast"
-import { getObjectWithoutAPIKeys } from "@/utils/config/api"
+import { portableConfig } from "@/personal/config-export"
 import { APP_NAME } from "@/utils/constants/app"
 import { buildGlossaryDocument } from "@/utils/glossary/sync/document"
 import { readLocalGlossary } from "@/utils/glossary/sync/local-store"
@@ -33,12 +33,8 @@ export function useExportConfig({
   includeGlossary = true,
 }: UseExportConfigOptions) {
   return useMutation({
-    mutationFn: async (includeApiKeys: boolean) => {
-      let exportConfig = config
-
-      if (!includeApiKeys) {
-        exportConfig = getObjectWithoutAPIKeys(config)
-      }
+    mutationFn: async () => {
+      const exportConfig = portableConfig(config)
 
       // Best effort, and deliberately so: this hook is also what the recovery
       // screen offers when the extension is already broken, and a database that

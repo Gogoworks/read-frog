@@ -1,5 +1,6 @@
 import type { LanguageTag } from "@read-frog/definitions"
 import type { GuideDictionaryNotebaseCompletionInput } from "./guide/dictionary-notebase"
+import type { SaveNotesInput } from "@/personal/notes/model"
 import type {
   BuiltInAiPromptEvent,
   FeatureUsageContext,
@@ -35,6 +36,11 @@ import type { EdgeTTSVoice } from "@/utils/server/edge-tts/types"
 import { defineExtensionMessaging } from "@webext-core/messaging"
 
 interface ProtocolMap {
+  savePersonalNotes: (data: SaveNotesInput) => {
+    libraryId: string
+    libraryName: string
+    count: number
+  }
   // navigation
   openPage: (data: { url: string; active?: boolean }) => void
   openOptionsPage: (data?: { route?: `/${string}` }) => void

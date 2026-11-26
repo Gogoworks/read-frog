@@ -53,10 +53,8 @@ vi.mock("../layout-field", () => ({
   ReadOnlyLayoutField: () => <div>ReadOnlyLayoutField</div>,
 }))
 
-vi.mock("../notebase-connection-field", () => ({
-  NotebaseConnectionField: () => (
-    <div>{i18n.t("options.selectionToolbar.customActions.form.notebase.title")}</div>
-  ),
+vi.mock("@/personal/ui/connection", () => ({
+  LocalConnection: () => <div>{i18n.t("personal.title")}</div>,
 }))
 
 const AI_CONFIG_HELPER_TRIGGER = i18n.t(
@@ -192,9 +190,7 @@ describe("customActionConfigForm notebase availability", () => {
       </Provider>,
     )
 
-    expect(
-      screen.getByText(i18n.t("options.selectionToolbar.customActions.form.notebase.title")),
-    ).toBeInTheDocument()
+    expect(screen.getByText(i18n.t("personal.title"))).toBeInTheDocument()
   })
 
   it("duplicates a custom action with its mutable state and connection", async () => {

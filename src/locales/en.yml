@@ -2053,3 +2053,76 @@ translationHub:
   translationFailed: Translation Failed
   translationFailedFallback: Translation failed
   retryTranslation: Retry translation
+
+personal:
+  portableConfig: Settings exports omit keys, custom endpoints, request headers and provider request options.
+  title: Local notes
+  description: Notes are saved in this browser profile. Export a JSON backup to restore them in another profile.
+  library: Notebook
+  libraryName: Notebook name
+  create: New notebook
+  rename: Rename notebook
+  deleteLibrary: Delete notebook
+  deleteLibraryHelp: "Delete “$1”, all its notes and its action mappings? Export a backup first if you want to keep a copy."
+  deleteNote: Delete note
+  deleteNoteHelp: Delete this note from the current notebook?
+  save: Save to local notes
+  saved: Saved $1 notes to “$2”.
+  savedOne: Saved 1 note to “$1”.
+  saveChanges: Save
+  cancel: Cancel
+  close: Close
+  manage: Manage local notes
+  connectionHelp: The first save can create a notebook with this action’s fields. To use an existing notebook, choose it and map the fields below.
+  automatic: Create from this action on first save
+  originalOnly: Original result only
+  mapField: "Column for $1"
+  saveMapping: Save mapping
+  mappingSaved: Mapping saved
+  fields: Notebook fields
+  fieldName: "Field $1"
+  fieldType: Field type
+  text: Text
+  number: Number
+  content: Content
+  addField: Add field
+  removeField: Remove field
+  details: Note details
+  original: Original AI output
+  selection: Original selection
+  source: Source
+  unknown: Unavailable
+  videoTime: "Video position: $1 seconds"
+  action: AI action
+  created: Created
+  updated: Edited
+  search: Search notes
+  sort: Sort by creation time
+  newest: Newest first
+  oldest: Oldest first
+  count: "$1 notes"
+  oneNote: 1 note
+  noMatches: No notes match this search.
+  emptyNotes: Map an AI action to this notebook, then save a result from the selection toolbar.
+  emptyLibraries: Save an AI result to create its notebook automatically, or create a notebook here.
+  previous: Previous
+  next: Next
+  loading: Loading notes…
+  backup: Back up all notebooks (JSON)
+  restore: Restore JSON
+  exportCsv: Export notebook CSV
+  importCsv: Import official CSV
+  import: Import
+  restoreHelp: "Merge $1 notebook(s) and $2 note(s)? Identical records are skipped. Conflicting records cancel the entire import."
+  csvHelp: "Import $2 note(s) into a separate notebook named “$1”? Columns are imported as text. Reimporting the same table skips it."
+  imported: "Added $1 notebook(s) and $2 note(s). Skipped $3 existing record(s)."
+  errors:
+    invalidBackup: This file is not a supported Read Frog Personal notes backup.
+    importConflict: A record with the same ID has different content. Import cancelled before any changes.
+    invalidFields: Give each field a unique name and choose a valid field type.
+    invalidMapping: Connect at least one compatible field and update any mappings affected by field changes.
+    invalidValue: A value does not match its field type.
+    changed: This note changed. Reopen it to use the latest version.
+    missing: This note or notebook no longer exists.
+    invalidCsv: Invalid CSV. Check the column names, quoting and number of cells in each row.
+    operation: Could not complete the local notes operation. Check available browser storage and try again.

@@ -265,7 +265,7 @@ export const SEARCH_ITEMS: SearchItem[] = [
     sectionId: CUSTOM_ACTION_NOTEBASE_SECTION_ID,
     route: "/custom-actions",
     titleKey: "options.selectionToolbar.customActions.form.notebase.title",
-    descriptionKey: "options.selectionToolbar.customActions.form.notebase.description",
+    descriptionKey: "personal.connectionHelp",
     pageKey: "options.selectionToolbar.customActions.title",
   },
 

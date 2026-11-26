@@ -1,4 +1,8 @@
 import assert from "node:assert/strict"
+import { execFileSync } from "node:child_process"
+import { mkdirSync, mkdtempSync, rmSync } from "node:fs"
+import { tmpdir } from "node:os"
+import { join } from "node:path"
 import { describe, it } from "node:test"
 import { assertApiIdentity, createWxtEnvironment, resolveMonorepoRoot } from "./dev-local.mjs"
 
@@ -10,8 +14,12 @@ describe("local extension worktree connection", () => {
     cookieDomain: "wt-abc.readfrog.localhost",
   }
 
-  it("uses the selected monorepo for both source aliases and runtime URLs", () => {
-    const root = resolveMonorepoRoot()
+  it("uses the selected monorepo for both source aliases and runtime URLs", (t) => {
+    const fixture = mkdtempSync(join(tmpdir(), "read-frog-dev-local-"))
+    t.after(() => rmSync(fixture, { recursive: true, force: true }))
+    mkdirSync(join(fixture, "apps/server"), { recursive: true })
+    execFileSync("git", ["init", "-q", fixture])
+    const root = resolveMonorepoRoot(fixture)
     assert.equal(resolveMonorepoRoot(root), root)
     assert.throws(() => resolveMonorepoRoot(`${root}/apps/server`), /monorepo root/)
     assert.deepEqual(

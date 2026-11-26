@@ -2,11 +2,13 @@ import type { CustomActionEditorTab } from "@/utils/navigation"
 import { IconSettings, IconTable } from "@tabler/icons-react"
 import { useSelector } from "@tanstack/react-store"
 import { useAtom } from "jotai"
-import { useMemo, useRef } from "react"
+import { useCallback, useRef } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/base-ui/tabs"
+import { describeAction, validateBinding } from "@/personal/notes/model"
+import { personalNotes } from "@/personal/notes/store"
+import { useNotesQuery } from "@/personal/ui/shared"
 import { i18n } from "@/utils/i18n"
 import { CUSTOM_ACTION_NOTEBASE_SECTION_ID } from "@/utils/navigation"
-import { sanitizeCustomActionNotebaseConnection } from "@/utils/notebase/connection"
 import { cn } from "@/utils/styles/utils"
 import { customActionEditorTabAtom } from "../atoms"
 import { useActionEditor } from "./action-editor"
@@ -46,21 +48,24 @@ function ConfigTabStatus() {
 }
 
 function NotebaseTabStatus() {
-  const { form } = useActionEditor().state
-  const outputSchema = useSelector(form.store, (state) => state.values.outputSchema)
-  const connection = useSelector(form.store, (state) => state.values.notebaseConnection)
-  const sanitized = useMemo(
-    () => sanitizeCustomActionNotebaseConnection(connection, outputSchema),
-    [connection, outputSchema],
+  const { action } = useActionEditor().state
+  const { data: state } = useNotesQuery(
+    useCallback(async () => {
+      const { binding, libraries } = await personalNotes().connectionOptions(action.id)
+      if (!binding) return null
+      const library = libraries.find((l) => l.id === binding.libraryId)
+      if (!library) return "needsAttention"
+      try {
+        validateBinding(binding, library, describeAction(action))
+        return "connected"
+      } catch {
+        return "needsAttention"
+      }
+    }, [action]),
   )
-
-  // A connection the sanitizer rejects outright reads as "not connected" in the tab too.
-  if (!connection || !sanitized) return null
-  // Dropped mappings point at a deleted field or collide with another; saving would skip them.
-  if (sanitized.mappings.length < connection.mappings.length) {
-    return <StatusDot tone="destructive" label={t("needsAttention")} />
-  }
-  return <StatusDot tone="neutral" label={t("connected")} />
+  return state ? (
+    <StatusDot tone={state === "connected" ? "neutral" : "destructive"} label={t(state)} />
+  ) : null
 }
 
 /**

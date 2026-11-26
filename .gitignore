@@ -40,6 +40,9 @@ coverage/
 tsconfig.local.json
 
 docs/
+!/docs/
+/docs/*
+!/docs/personal/
 
 /repos
 

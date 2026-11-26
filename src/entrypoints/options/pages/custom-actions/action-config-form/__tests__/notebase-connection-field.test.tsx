@@ -12,8 +12,8 @@ import { TooltipProvider } from "@/components/ui/base-ui/tooltip"
 import { configSchema } from "@/types/config/config"
 import { configAtom } from "@/utils/atoms/config"
 import { CONFIG_STORAGE_KEY, DEFAULT_CONFIG } from "@/utils/constants/config"
-import { CustomActionConfigForm } from ".."
 import { customActionEditorTabAtom, selectedCustomActionIdAtom } from "../../atoms"
+import { ActionEditor, CustomActionEditor } from "../action-editor"
 
 // The connection field, the form and its autosave are real; the session and the
 // Notebase API are stubbed, and fields unrelated to the connection render nothing.
@@ -121,7 +121,18 @@ async function setup(action: SelectionToolbarCustomAction) {
   store.set(configAtom, config)
   await store.set(selectedCustomActionIdAtom, action.id)
   store.set(customActionEditorTabAtom, "notebase")
-  const router = createMemoryRouter([{ path: "/", element: <CustomActionConfigForm /> }])
+  const router = createMemoryRouter([
+    {
+      path: "/",
+      element: (
+        <CustomActionEditor.Provider action={action}>
+          <ActionEditor.Form>
+            <ActionEditor.NotebaseConnectionField variant="tab" />
+          </ActionEditor.Form>
+        </CustomActionEditor.Provider>
+      ),
+    },
+  ])
   render(
     <QueryClientProvider
       client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}

@@ -56,6 +56,7 @@ describe("SettingsNav", () => {
       "/api-providers",
       "/preference",
       "/shortcuts",
+      "/local-notes",
     ])
     expect(screen.getByRole("link", { name: "options.usage.title" })).toHaveAttribute(
       "aria-current",
